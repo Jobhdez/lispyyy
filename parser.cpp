@@ -95,6 +95,24 @@ public:
   }
 };
 
+class BeginExpression : public Expression {
+  std::vector<std::shared_ptr<Expression>> expressions;
+
+public:
+  BeginExpression(const std::vector<std::shared_ptr<Expression>> &expressions)
+      : expressions(expressions) {}
+
+  std::string toString() const override {
+    std::string result = "(begin";
+    for (const auto &expr : expressions) {
+      result += " " + expr->toString();
+    }
+    result += ")";
+    return result;
+  }
+};
+
+
 class Parser {
 public:
   static std::shared_ptr<Expression> parse(const std::string &program) {
@@ -161,6 +179,15 @@ private:
         std::shared_ptr<Expression> els = parseExpression(tokens, index);
         ++index; // Skip closing ')'
         return std::make_shared<IfExpression>(cnd, thn, els);
+      } else if (nextToken == "begin") {
+	++index;
+	std::vector<std::shared_ptr<Expression>> expressions;
+	while (tokens[index] != ")") {
+	  expressions.push_back(parseExpression(tokens, index));
+	  ++index;
+	}
+	++index;
+	return std::make_shared<BeginExpression>(expressions);
       } else if (nextToken == "set") {
 	++index;
         std::string variable = tokens[index++];
@@ -203,8 +230,10 @@ int main() {
   // std::string input = "(let ((x 3)) (+ x 3))";
   //std::string input = "(let ((c 3)) (if (< c 4) 4 6))";
   //std::string input = "(set d 2)";
-  std::string input = "(set d (if (< 3 4) 4 6))";
+  //std::string input = "(set d (if (< 3 4) 4 6))";
 
+  //std::string input = "(begin (set a 3) (set b (+ a 3)) (if (< b 10) 1 10))";
+  std::string input = "(let ((d 2)) (begin (set d 10) (set d 4) (+ d 10)))";
   std::shared_ptr<Expression> ast = Parser::parse(input);
 
   std::cout << "Parsed AST: " << std::endl;
