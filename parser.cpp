@@ -71,9 +71,10 @@ public:
 class SetExpression : public Expression {
   std::string variable;
   std::shared_ptr<Expression> value;
+
 public:
   SetExpression(const std::string &variable, std::shared_ptr<Expression> value)
-    : variable(variable), value(value) {}
+      : variable(variable), value(value) {}
   std::string toString() const override {
     return "(set " + variable + " " + value->toString() + ")";
   }
@@ -98,9 +99,11 @@ public:
 class WhileExpression : public Expression {
   std::shared_ptr<Expression> cnd;
   std::shared_ptr<Expression> body;
+
 public:
-  WhileExpression(const std::shared_ptr<Expression> cnd, const std::shared_ptr<Expression> body)
-    : cnd(cnd), body(body) {}
+  WhileExpression(const std::shared_ptr<Expression> cnd,
+                  const std::shared_ptr<Expression> body)
+      : cnd(cnd), body(body) {}
   std::string toString() const override {
     return "(while " + cnd->toString() + " " + body->toString() + ")";
   }
@@ -122,7 +125,6 @@ public:
     return result;
   }
 };
-
 
 class Parser {
 public:
@@ -191,23 +193,23 @@ private:
         ++index; // Skip closing ')'
         return std::make_shared<IfExpression>(cnd, thn, els);
       } else if (nextToken == "begin") {
-	++index;
-	std::vector<std::shared_ptr<Expression>> expressions;
-	while (tokens[index] != ")") {
-	  expressions.push_back(parseExpression(tokens, index));
-	  ++index;
-	}
-	++index;
-	expressions.push_back(parseExpression(tokens, index));
-			      
-	return std::make_shared<BeginExpression>(expressions);
+        ++index;
+        std::vector<std::shared_ptr<Expression>> expressions;
+        while (tokens[index] != ")") {
+          expressions.push_back(parseExpression(tokens, index));
+          ++index;
+        }
+        ++index;
+        expressions.push_back(parseExpression(tokens, index));
+
+        return std::make_shared<BeginExpression>(expressions);
       } else if (nextToken == "set") {
-	++index;
+        ++index;
         std::string variable = tokens[index++];
-	std::shared_ptr<Expression> value = parseExpression(tokens, index);
-	++index;
-	return std::make_shared<SetExpression>(variable, value);
-	
+        std::shared_ptr<Expression> value = parseExpression(tokens, index);
+        ++index;
+        return std::make_shared<SetExpression>(variable, value);
+
       } else if (nextToken == "let") {
         ++index; // Skip "let"
         ++index; // Skip first "("
@@ -221,14 +223,14 @@ private:
         ++index; // Skip closing ')'
         return std::make_shared<LetExpression>(variable, value, body);
       } else if (nextToken == "while") {
-	++index;
-	std::shared_ptr<Expression> cnd = parseExpression(tokens, index);
-	++index;
-	std::shared_ptr<Expression> body = parseExpression(tokens, index);
-	//++index;
-	return std::make_shared<WhileExpression>(cnd, body);
+        ++index;
+        std::shared_ptr<Expression> cnd = parseExpression(tokens, index);
+        ++index;
+        std::shared_ptr<Expression> body = parseExpression(tokens, index);
+        //++index;
+        return std::make_shared<WhileExpression>(cnd, body);
       }
-	
+
     } else if (isNumber(token)) {
       return std::make_shared<NumberExpression>(std::stoi(token));
 
@@ -249,17 +251,19 @@ int main() {
   // std::string input = "(if (< 3 4) 3 4)";
   // std::string input = "(if (< 2 4) 5 6)";
   // std::string input = "(let ((x 3)) (+ x 3))";
-  //std::string input = "(let ((c 3)) (if (< c 4) 4 6))";
-  //std::string input = "(set d 2)";
-  //std::string input = "(set d (if (< 3 4) 4 6))";
+  // std::string input = "(let ((c 3)) (if (< c 4) 4 6))";
+  // std::string input = "(set d 2)";
+  // std::string input = "(set d (if (< 3 4) 4 6))";
 
-  //std::string input = "(begin (set a 3) (set b (+ a 3)) (if (< b 10) 1 10))";
-  //std::string input = "(let ((d 2)) (begin (set d 10) (set d 4) (+ d 10)))";
-  //std::string input = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) (begin (set sum (+ i sum)) (set i (+ i 1)))) sum)))";
-  //std::string input = "sum";
+  // std::string input = "(begin (set a 3) (set b (+ a 3)) (if (< b 10) 1 10))";
+  // std::string input = "(let ((d 2)) (begin (set d 10) (set d 4) (+ d 10)))";
+  // std::string input = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5)
+  // (begin (set sum (+ i sum)) (set i (+ i 1)))) sum)))"; std::string input =
+  // "sum";
   std::string input = "(let ((i 0)) (begin (while (< i 5) (set i (+ i 1))) i))";
-  //std::string input = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) (set i (+ i 1))) i)))";
-  //std::string input = "(while (< i 5) (begin (set i (+ i 1)) (set sum 4) sum))";
+  // std::string input = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) (set
+  // i (+ i 1))) i)))"; std::string input = "(while (< i 5) (begin (set i (+ i
+  // 1)) (set sum 4) sum))";
   std::shared_ptr<Expression> ast = Parser::parse(input);
 
   std::cout << "Parsed AST: " << std::endl;
