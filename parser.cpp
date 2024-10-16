@@ -260,10 +260,14 @@ int main() {
   // std::string input = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5)
   // (begin (set sum (+ i sum)) (set i (+ i 1)))) sum)))"; std::string input =
   // "sum";
-  std::string input = "(let ((i 0)) (begin (while (< i 5) (set i (+ i 1))) i))";
+  // std::string input = "(let ((i 0)) (begin (while (< i 5) (set i (+ i 1)))
+  // i))";
   // std::string input = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) (set
   // i (+ i 1))) i)))"; std::string input = "(while (< i 5) (begin (set i (+ i
   // 1)) (set sum 4) sum))";
+  std::string input =
+      "(let ((sum 0)) (let ((i 0)) (let ((j 2)) (begin (while (< i 5) (begin "
+      "(set sum (+ sum j)) (set i (+ i 1)))) sum))))";
   std::shared_ptr<Expression> ast = Parser::parse(input);
 
   std::cout << "Parsed AST: " << std::endl;
