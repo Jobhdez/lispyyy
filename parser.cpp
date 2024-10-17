@@ -67,6 +67,9 @@ public:
     return "(let ((" + variable + " " + value->toString() + ")) " +
            body->toString() + ")";
   }
+  std::string get_variable() { return variable; }
+  std::shared_ptr<Expression> get_value() { return value; }
+  std::shared_ptr<Expression> get_body() { return body; }
 };
 
 class SetExpression : public Expression {
