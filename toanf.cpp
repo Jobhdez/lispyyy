@@ -26,6 +26,12 @@ private:
           std::make_shared<IfExpression>(temp_var, thn, els);
       return std::make_shared<LetExpression>(temp_var->get_name(),
                                              ast_if->get_cnd(), if_exp);
+    } else if (std::shared_ptr<LetExpression> ast_let =
+                   std::dynamic_pointer_cast<LetExpression>(ast)) {
+      std::shared_ptr<Expression> body =
+          ast_to_anf(ast_let->get_body(), counter);
+      return std::make_shared<LetExpression>(ast_let->get_variable(),
+                                             ast_let->get_value(), body);
     }
     return ast;
   }
@@ -33,18 +39,11 @@ private:
 
 int main() {
 
-  /*
-  // Use std::make_shared correctly with the class
-  std::shared_ptr<NumberExpression> n = std::make_shared<NumberExpression>(4);
-
-  // Use if statement to check the type
-  if (std::shared_ptr<NumberExpression> numExpr =
-  std::dynamic_pointer_cast<NumberExpression>(n)) { std::cout <<
-  numExpr->toString() << std::endl; } else { std::cout << "Not a
-  NumberExpression" << std::endl;
-  }
-  */
-  std::string input = "(if (< 2 3) 3 4)";
+  // std::string input = "(if (< 2 3) 3 4)";
+  // std::string input = "(let ((x 3)) (if (< x 3) 1 2))";
+  // std::string input = "(let ((x 3)) (let ((y 5)) (if (< x y) 1 2)))";
+  std::string input = "(let ((x 4)) (let ((y 3)) (if (< x y) (let ((z 5)) (if "
+                      "(< z 3) 2 4)) 1)))";
   std::shared_ptr<Expression> ast = Parser::parse(input);
   std::shared_ptr<Expression> anf = ToAnf::to_anf(ast);
   std::cout << anf->toString() << std::endl;
