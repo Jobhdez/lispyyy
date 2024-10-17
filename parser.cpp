@@ -82,6 +82,8 @@ public:
   std::string toString() const override {
     return "(set " + variable + " " + value->toString() + ")";
   }
+  std::string get_variable() { return variable; }
+  std::shared_ptr<Expression> get_value() { return value; }
 };
 
 class IfExpression : public Expression {
@@ -114,6 +116,8 @@ public:
   std::string toString() const override {
     return "(while " + cnd->toString() + " " + body->toString() + ")";
   }
+  std::shared_ptr<Expression> get_cnd() { return cnd; }
+  std::shared_ptr<Expression> get_body() { return body; }
 };
 
 class BeginExpression : public Expression {
@@ -130,6 +134,9 @@ public:
     }
     result += ")";
     return result;
+  }
+  std::vector<std::shared_ptr<Expression>> get_expressions() {
+    return expressions;
   }
 };
 
