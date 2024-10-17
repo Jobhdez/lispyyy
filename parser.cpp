@@ -25,6 +25,7 @@ class VariableExpression : public Expression {
 public:
   VariableExpression(const std::string &name) : name(name) {}
   std::string toString() const override { return name; }
+  std::string get_name() { return name; }
 };
 
 class AdditionExpression : public Expression {
@@ -94,6 +95,9 @@ public:
     return "(if " + cnd->toString() + " " + thn->toString() + " " +
            els->toString() + ")";
   }
+  std::shared_ptr<Expression> get_cnd() { return cnd; }
+  std::shared_ptr<Expression> get_thn() { return thn; }
+  std::shared_ptr<Expression> get_els() { return els; }
 };
 
 class WhileExpression : public Expression {
@@ -246,6 +250,7 @@ private:
   }
 };
 
+/*
 int main() {
   // Example input: (if (< 3 4) 3 4)
   // std::string input = "(if (< 3 4) 3 4)";
@@ -275,3 +280,4 @@ int main() {
 
   return 0;
 }
+*/
