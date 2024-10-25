@@ -17,6 +17,9 @@ class NumberExpression : public Expression {
 public:
   NumberExpression(int value) : value(value) {}
   std::string toString() const override { return std::to_string(value); }
+  int get_value() {
+    return value;
+  }
 };
 
 class VariableExpression : public Expression {
