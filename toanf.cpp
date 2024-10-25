@@ -55,19 +55,18 @@ private:
     return ast;
   }
 };
-
+/*
 int main() {
 
   // std::string input = "(if (< 2 3) 3 4)";
   // std::string input = "(let ((x 3)) (if (< x 3) 1 2))";
   // std::string input = "(let ((x 3)) (let ((y 5)) (if (< x y) 1 2)))";
-  // std::string input = "(let ((x 4)) (let ((y 3)) (if (< x y) (let ((z 5)) (if
-  // "
-  // "(< z 3) 2 4)) 1)))";
-  std::string input = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) "
-                      "(begin (set sum (+ i sum)) (set i (+ i 1)))) sum)))";
+  std::string input = "(let ((x 4)) (let ((y 3)) (if (< x y) (let ((z 5)) (if (< z 3) 2 4)) 1)))";
+  // std::string input = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) "
+  //                  "(begin (set sum (+ i sum)) (set i (+ i 1)))) sum)))";
   std::shared_ptr<Expression> ast = Parser::parse(input);
   std::shared_ptr<Expression> anf = ToAnf::to_anf(ast);
   std::cout << anf->toString() << std::endl;
   return 0;
 }
+*/
