@@ -53,6 +53,13 @@ public:
   std::string toString() const override {
     return "(< " + left->toString() + " " + right->toString() + ")";
   }
+  std::shared_ptr<Expression> get_left() {
+    return left;
+  }
+
+  std::shared_ptr<Expression> get_right() {
+    return right;
+  }
 };
 
 class LetExpression : public Expression {
