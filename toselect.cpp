@@ -6,15 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-using std::cout;
-using std::dynamic_pointer_cast;
-using std::endl;
-using std::make_shared;
-using std::shared_ptr;
-using std::string;
-using std::to_string;
-using std::unordered_map;
-using std::vector;
+using namespace std;
 
 class Instruction {
   vector<string> instruction;
