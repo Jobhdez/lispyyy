@@ -63,10 +63,12 @@ class LetExpression : public Expression {
   shared_ptr<Expression> body;
 
 public:
-  LetExpression(const string &variable, shared_ptr<Expression> value, shared_ptr<Expression> body)
+  LetExpression(const string &variable, shared_ptr<Expression> value,
+                shared_ptr<Expression> body)
       : variable(variable), value(value), body(body) {}
   string toString() const override {
-    return "(let ((" + variable + " " + value->toString() + ")) " + body->toString() + ")";
+    return "(let ((" + variable + " " + value->toString() + ")) " +
+           body->toString() + ")";
   }
   string get_variable() { return variable; }
   shared_ptr<Expression> get_value() { return value; }
@@ -93,11 +95,13 @@ class IfExpression : public Expression {
   shared_ptr<Expression> els;
 
 public:
-  IfExpression(const shared_ptr<Expression> cnd, shared_ptr<Expression> thn, shared_ptr<Expression> els)
+  IfExpression(const shared_ptr<Expression> cnd, shared_ptr<Expression> thn,
+               shared_ptr<Expression> els)
       : cnd(cnd), thn(thn), els(els) {}
 
   string toString() const override {
-    return "(if " + cnd->toString() + " " + thn->toString() + " " + els->toString() + ")";
+    return "(if " + cnd->toString() + " " + thn->toString() + " " +
+           els->toString() + ")";
   }
   shared_ptr<Expression> get_cnd() { return cnd; }
   shared_ptr<Expression> get_thn() { return thn; }
@@ -109,7 +113,8 @@ class WhileExpression : public Expression {
   shared_ptr<Expression> body;
 
 public:
-  WhileExpression(const shared_ptr<Expression> cnd, const shared_ptr<Expression> body)
+  WhileExpression(const shared_ptr<Expression> cnd,
+                  const shared_ptr<Expression> body)
       : cnd(cnd), body(body) {}
   string toString() const override {
     return "(while " + cnd->toString() + " " + body->toString() + ")";
@@ -171,7 +176,8 @@ private:
     return tokens;
   }
 
-  static shared_ptr<Expression> parseExpression(const vector<string> &tokens, size_t &index) {
+  static shared_ptr<Expression> parseExpression(const vector<string> &tokens,
+                                                size_t &index) {
     const string &token = tokens[index];
 
     if (token == "(") {
@@ -256,8 +262,9 @@ private:
 
 /*
 int main() {
-  string input = "(let ((sum 0)) (let ((i 0)) (let ((j 2)) (begin (while (< i 5) (begin (set sum (+ sum j)) (set i (+ i 1)))) sum))))";
-  shared_ptr<Expression> ast = Parser::parse(input);
+  string input = "(let ((sum 0)) (let ((i 0)) (let ((j 2)) (begin (while (< i 5)
+(begin (set sum (+ sum j)) (set i (+ i 1)))) sum))))"; shared_ptr<Expression>
+ast = Parser::parse(input);
 
   cout << "Parsed AST: " << endl;
   cout << ast->toString() << endl;
