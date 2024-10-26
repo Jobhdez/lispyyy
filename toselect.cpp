@@ -1,37 +1,36 @@
-#include "toanf.cpp" // Ideally, replace with toanf.h if available.
+#include "toanf.cpp"  
 #include <iostream>
 #include <memory>
-#include <sstream>
-#include <string>
 #include <unordered_map>
 #include <vector>
+#include <string>
+#include <sstream>
 
 class Instruction {
   std::vector<std::string> instruction;
-
 public:
-  Instruction(const std::vector<std::string> &instruction)
-      : instruction(instruction) {}
-  std::vector<std::string> get_instruction() const { return instruction; }
+  Instruction(const std::vector<std::string> &instruction) : instruction(instruction) {}
+  std::vector<std::string> get_instruction() const {
+    return instruction;
+  }
 };
 
 class Instructions {
   std::vector<std::shared_ptr<Instruction>> instructions;
 
 public:
-  Instructions(const std::vector<std::shared_ptr<Instruction>> &instructions)
-      : instructions(instructions) {}
-
+  Instructions(const std::vector<std::shared_ptr<Instruction>> &instructions) : instructions(instructions) {}
+  
   std::vector<std::shared_ptr<Instruction>> get_instructions() const {
     return instructions;
   }
 
   void print_instructions() const {
     std::cout << "{";
-
+    
     for (size_t i = 0; i < instructions.size(); ++i) {
       std::cout << "{";
-
+      
       const auto &instr = instructions[i]->get_instruction();
       for (size_t j = 0; j < instr.size(); ++j) {
         std::cout << instr[j];
@@ -39,13 +38,13 @@ public:
           std::cout << ", ";
         }
       }
-
+      
       std::cout << "}";
       if (i < instructions.size() - 1) {
         std::cout << ", ";
       }
     }
-
+    
     std::cout << "}" << std::endl;
   }
 };
@@ -56,18 +55,18 @@ public:
     size_t counter = 0;
     std::unordered_map<std::string, std::string> stack;
     auto instructions = anf_to_select(anf, counter, stack);
-    return Instructions(instructions);
+    return Instructions(instructions); 
   }
 
 private:
-  static std::vector<std::shared_ptr<Instruction>>
-  anf_to_select(const std::shared_ptr<Expression> &anf, size_t &counter,
-                std::unordered_map<std::string, std::string> &stack) {
-
+  static std::vector<std::shared_ptr<Instruction>> anf_to_select(
+      const std::shared_ptr<Expression> &anf,
+      size_t &counter,
+      std::unordered_map<std::string, std::string> &stack) {
+    
     std::vector<std::shared_ptr<Instruction>> instructions;
 
-    if (std::shared_ptr<LetExpression> anf_let =
-            std::dynamic_pointer_cast<LetExpression>(anf)) {
+    if (std::shared_ptr<LetExpression> anf_let = std::dynamic_pointer_cast<LetExpression>(anf)) {
       std::string let_var = anf_let->get_variable();
 
       if (stack.find(let_var) == stack.end()) {
@@ -83,10 +82,8 @@ private:
         std::vector<std::string> mov = {"movq", immediate, stack_location};
         instructions.push_back(std::make_shared<Instruction>(mov));
 
-        auto body_instructions =
-            anf_to_select(anf_let->get_body(), counter, stack);
-        instructions.insert(instructions.end(), body_instructions.begin(),
-                            body_instructions.end());
+        auto body_instructions = anf_to_select(anf_let->get_body(), counter, stack);
+        instructions.insert(instructions.end(), body_instructions.begin(), body_instructions.end());
       } else {
         std::string stack_location = stack[let_var];
         std::shared_ptr<Expression> value = anf_let->get_value();
@@ -97,10 +94,8 @@ private:
         std::vector<std::string> mov = {"movq", immediate, stack_location};
         instructions.push_back(std::make_shared<Instruction>(mov));
 
-        auto body_instructions =
-            anf_to_select(anf_let->get_body(), counter, stack);
-        instructions.insert(instructions.end(), body_instructions.begin(),
-                            body_instructions.end());
+        auto body_instructions = anf_to_select(anf_let->get_body(), counter, stack);
+        instructions.insert(instructions.end(), body_instructions.begin(), body_instructions.end());
       }
     } else {
       auto var_expr = std::dynamic_pointer_cast<VariableExpression>(anf);
@@ -108,7 +103,7 @@ private:
       std::string stack_location = stack[var];
       std::vector<std::string> movq = {"movq", stack_location, "%rdi"};
       instructions.push_back(std::make_shared<Instruction>(movq));
-
+      
       std::vector<std::string> print = {"callq", "print_int"};
       instructions.push_back(std::make_shared<Instruction>(print));
     }
@@ -123,5 +118,5 @@ int main() {
   std::shared_ptr<Expression> ast = Parser::parse(input);
   std::shared_ptr<Expression> anf = ToAnf::to_anf(ast);
   Instructions instructions = InstructionSelector::to_select(anf);
-  instructions.print_instructions();
+  instructions.print_instructions(); 
 }
