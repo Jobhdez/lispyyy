@@ -163,9 +163,62 @@ private:
       instructions.push_back(make_shared<Instruction>(mov));
       vector<string> print = {"callq", "print_int"};
       instructions.push_back(make_shared<Instruction>(print));
+      
+    } else if (shared_ptr<SetExpression> set_expr = dynamic_pointer_cast<SetExpression>(anf)) {
+      string var = set_expr->get_variable();
+      shared_ptr<Expression> exp = set_expr->get_value();
+      if (shared_ptr<NumberExpression> num_expr = dynamic_pointer_cast<NumberExpression>(exp)) {
+        string val = to_string(num_expr->get_value());
+        vector<string> mv = {"movq", val, stack[var]};
+        instructions.push_back(make_shared<Instruction>(mv));
+      } else if (shared_ptr<AdditionExpression> sum = dynamic_pointer_cast<AdditionExpression>(exp)) {
+        shared_ptr<Expression> left_exp = sum->get_left();
+        shared_ptr<Expression> right_exp = sum->get_right();
 
-    } else {
-      auto var_expr = dynamic_pointer_cast<VariableExpression>(anf);
+        if (shared_ptr<VariableExpression> l_var = dynamic_pointer_cast<VariableExpression>(left_exp)) {
+          if (shared_ptr<NumberExpression> r_num = dynamic_pointer_cast<NumberExpression>(right_exp)) {
+            vector<string> mov_ = {"movq", to_string(r_num->get_value()), "%rax"};
+            vector<string> add_ = {"addq", "%rax", stack[var]};
+            instructions.push_back(make_shared<Instruction>(mov_));
+            instructions.push_back(make_shared<Instruction>(add_));
+          } else if (shared_ptr<VariableExpression> r_var = dynamic_pointer_cast<VariableExpression>(right_exp)) {
+            vector<string> mov = {"movq", stack[r_var->get_name()], "%rax"};
+            vector<string> add = {"addq", "%rax", stack[var]};
+            instructions.push_back(make_shared<Instruction>(mov));
+            instructions.push_back(make_shared<Instruction>(add));
+          }
+        }
+      } 
+    } else if (shared_ptr<BeginExpression> bgn_exps = dynamic_pointer_cast<BeginExpression>(anf)) {
+      auto exps = bgn_exps->get_expressions();
+      for (int i = 0; i < exps.size(); i++) {
+        auto in = anf_to_select(exps[i], counter, stack);
+        for (int j = 0; j < in.size(); j++) {
+	  instructions.push_back(in[j]);
+	}
+      }
+    } else if (shared_ptr<WhileExpression> while_expr = dynamic_pointer_cast<WhileExpression>(anf)) {
+      shared_ptr<Expression> cnd = while_expr->get_cnd();
+      if (shared_ptr<LessExpression> cnd_expr = dynamic_pointer_cast<LessExpression>(cnd)) {
+	shared_ptr<Expression> left = cnd_expr->get_left();
+	shared_ptr<VariableExpression> var_e = dynamic_pointer_cast<VariableExpression>(left);
+	shared_ptr<Expression> right = cnd_expr->get_right();
+	shared_ptr<NumberExpression> num_e = dynamic_pointer_cast<NumberExpression>(right);
+
+	vector<string> cmp = {"cmpq", to_string(num_e->get_value()), stack[var_e->get_name()]};
+	vector<string> jl = {"jl", "loop_" + to_string(counter)};
+
+	shared_ptr<Expression> body = while_expr->get_body();
+	auto body_instructions = anf_to_select(body, counter, stack);
+
+	vector<string> loop = {"loop_" + to_string(counter)};
+	instructions.push_back(make_shared<Instruction>(loop));
+	instructions.insert(instructions.end(), body_instructions.begin(), body_instructions.end());
+	instructions.push_back(make_shared<Instruction>(cmp));
+	instructions.push_back(make_shared<Instruction>(jl));
+      }
+      
+    } else if (shared_ptr<VariableExpression> var_expr = dynamic_pointer_cast<VariableExpression>(anf)) {
       string var = var_expr->get_name();
       string stack_location = stack[var];
       vector<string> movq = {"movq", stack_location, "%rdi"};
@@ -180,9 +233,14 @@ private:
 };
 
 int main() {
-  string input = "(let ((x 3)) (if (< x 3) 1 2))";
+  //string input = "(let ((x 3)) (if (< x 3) 1 2))";
+  //string input = "(let ((x 3)) (begin (while (< x 5) (set x (+ x 1))) x))";
+  //string input = "(let ((x 3)) (set x (+ x 1)))";
+  /// string input = "(let ((x 3)) (begin x x))";
+  string input = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) (begin (set sum (+ sum 3)) (set i (+ i 1)))) sum)))";
   shared_ptr<Expression> ast = Parser::parse(input);
   shared_ptr<Expression> anf = ToAnf::to_anf(ast);
+  cout << ast->toString() << endl;
   cout << anf->toString() << endl;
   Instructions ins = InstructionSelector::to_select(anf);
   ins.print_instructions();

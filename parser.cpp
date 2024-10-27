@@ -41,6 +41,12 @@ public:
   string toString() const override {
     return "(+ " + left->toString() + " " + right->toString() + ")";
   }
+  shared_ptr<Expression> get_left() {
+    return left;
+  }
+  shared_ptr<Expression> get_right() {
+    return right;
+  }
 };
 
 class LessExpression : public Expression {
@@ -214,9 +220,9 @@ private:
           expressions.push_back(parseExpression(tokens, index));
           ++index;
         }
-        ++index;
-        expressions.push_back(parseExpression(tokens, index));
-
+	
+	
+         // Skip the closing ')'
         return make_shared<BeginExpression>(expressions);
       } else if (nextToken == "set") {
         ++index;
@@ -224,7 +230,6 @@ private:
         shared_ptr<Expression> value = parseExpression(tokens, index);
         ++index;
         return make_shared<SetExpression>(variable, value);
-
       } else if (nextToken == "let") {
         ++index; // Skip "let"
         ++index; // Skip first "("
@@ -242,12 +247,11 @@ private:
         shared_ptr<Expression> cnd = parseExpression(tokens, index);
         ++index;
         shared_ptr<Expression> body = parseExpression(tokens, index);
+        ++index; // Skip closing ')'
         return make_shared<WhileExpression>(cnd, body);
       }
-
     } else if (isNumber(token)) {
       return make_shared<NumberExpression>(stoi(token));
-
     } else {
       return make_shared<VariableExpression>(token);
     }
@@ -260,15 +264,10 @@ private:
   }
 };
 
-/*
 int main() {
-  string input = "(let ((sum 0)) (let ((i 0)) (let ((j 2)) (begin (while (< i 5)
-(begin (set sum (+ sum j)) (set i (+ i 1)))) sum))))"; shared_ptr<Expression>
-ast = Parser::parse(input);
-
-  cout << "Parsed AST: " << endl;
-  cout << ast->toString() << endl;
+  string program = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) (begin (set sum (+ sum 2)) (set i (+ i 1)))) sum)))";
+  shared_ptr<Expression> expression = Parser::parse(program);
+  cout << expression->toString() << endl;
 
   return 0;
 }
-*/
