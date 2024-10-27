@@ -233,11 +233,11 @@ private:
 };
 
 int main() {
-  //string input = "(let ((x 3)) (if (< x 3) 1 2))";
+  string input = "(let ((x 3)) (if (< x 3) 1 2))";
   //string input = "(let ((x 3)) (begin (while (< x 5) (set x (+ x 1))) x))";
   //string input = "(let ((x 3)) (set x (+ x 1)))";
   /// string input = "(let ((x 3)) (begin x x))";
-  string input = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) (begin (set sum (+ sum 3)) (set i (+ i 1)))) sum)))";
+  /// string input = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) (begin (set sum (+ sum 3)) (set i (+ i 1)))) sum)))";
   shared_ptr<Expression> ast = Parser::parse(input);
   shared_ptr<Expression> anf = ToAnf::to_anf(ast);
   cout << ast->toString() << endl;

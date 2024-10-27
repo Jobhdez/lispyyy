@@ -263,6 +263,7 @@ private:
     return !token.empty() && all_of(token.begin(), token.end(), ::isdigit);
   }
 };
+/*
 
 int main() {
   //string program = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) (begin (set sum (+ sum 2)) (set i (+ i 1)))) sum)))";
@@ -272,4 +273,4 @@ int main() {
 
   return 0;
 }
-
+*/
