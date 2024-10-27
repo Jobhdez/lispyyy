@@ -41,12 +41,8 @@ public:
   string toString() const override {
     return "(+ " + left->toString() + " " + right->toString() + ")";
   }
-  shared_ptr<Expression> get_left() {
-    return left;
-  }
-  shared_ptr<Expression> get_right() {
-    return right;
-  }
+  shared_ptr<Expression> get_left() { return left; }
+  shared_ptr<Expression> get_right() { return right; }
 };
 
 class LessExpression : public Expression {
@@ -220,9 +216,8 @@ private:
           expressions.push_back(parseExpression(tokens, index));
           ++index;
         }
-	
-	
-         // Skip the closing ')'
+
+        // Skip the closing ')'
         return make_shared<BeginExpression>(expressions);
       } else if (nextToken == "set") {
         ++index;
@@ -266,10 +261,10 @@ private:
 /*
 
 int main() {
-  //string program = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) (begin (set sum (+ sum 2)) (set i (+ i 1)))) sum)))";
-  string program = "(let ((i 3)) (begin (set i (+ i 1)) (set i (+ i 1)) i))";
-  shared_ptr<Expression> expression = Parser::parse(program);
-  cout << expression->toString() << endl;
+  //string program = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) (begin
+(set sum (+ sum 2)) (set i (+ i 1)))) sum)))"; string program = "(let ((i 3))
+(begin (set i (+ i 1)) (set i (+ i 1)) i))"; shared_ptr<Expression> expression =
+Parser::parse(program); cout << expression->toString() << endl;
 
   return 0;
 }
