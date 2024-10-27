@@ -265,9 +265,11 @@ private:
 };
 
 int main() {
-  string program = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) (begin (set sum (+ sum 2)) (set i (+ i 1)))) sum)))";
+  //string program = "(let ((sum 0)) (let ((i 0)) (begin (while (< i 5) (begin (set sum (+ sum 2)) (set i (+ i 1)))) sum)))";
+  string program = "(let ((i 3)) (begin (set i (+ i 1)) (set i (+ i 1)) i))";
   shared_ptr<Expression> expression = Parser::parse(program);
   cout << expression->toString() << endl;
 
   return 0;
 }
+
